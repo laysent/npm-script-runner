@@ -1,0 +1,8 @@
+public/*.map
+src
+.editorconfig
+.eslintignore
+.eslintrc
+.gitignore
+index.ejs
+webpack.config.js
