@@ -4,12 +4,20 @@ import Toggle from 'material-ui/Toggle';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
-const outputStyle = {
+const outputOutterStyle = {
   backgroundColor: '#000',
   whiteSpace: 'pre',
-  overflowY: 'scroll',
-  maxHeight: 400,
+  padding: 0,
 };
+
+const outputContainerStyle = {
+  overflow: 'scroll',
+  width: 400 - (16 * 2),
+  maxHeight: 400 - (16 * 2),
+  display: 'block',
+  padding: 16,
+};
+
 
 export default class ScriptBlock extends React.Component {
   constructor(props) {
@@ -17,8 +25,26 @@ export default class ScriptBlock extends React.Component {
     this.state = { expanded: false, flags: props.flags };
   }
 
+  componentDidMount() {
+    if (this.stdout) {
+      this.stdout.scrollTop = this.stdout.scrollHeight;
+    }
+    if (this.stderr) {
+      this.stderr.scrollTop = this.stderr.scrollHeight;
+    }
+  }
+
   componentWillUpdate(nextProps) {
     if (this.props.flags !== nextProps.flags) this.setState({ flags: nextProps.flags });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.stdout && this.props.stdout !== prevProps.stdout) {
+      this.stdout.scrollTop = this.stdout.scrollHeight;
+    }
+    if (this.stderr && this.props.stderr !== prevProps.stderr) {
+      this.stderr.scrollTop = this.stderr.scrollHeight;
+    }
   }
 
   handleExpandChange = (expanded) => {
@@ -53,13 +79,17 @@ export default class ScriptBlock extends React.Component {
           <CardText expandable>No Data</CardText>
         }
         {this.props.stdout && (
-          <CardText expandable style={Object.assign({ color: '#fff' }, outputStyle)}>
-            {this.props.stdout}
+          <CardText expandable style={Object.assign({ color: '#fff' }, outputOutterStyle)}>
+            <span ref={(span) => { this.stdout = span; }} style={outputContainerStyle}>
+              {this.props.stdout}
+            </span>
           </CardText>
         )}
         {this.props.stderr && (
-          <CardText expandable style={Object.assign({ color: '#f00' }, outputStyle)}>
-            {this.props.stderr}
+          <CardText expandable style={Object.assign({ color: '#f00' }, outputOutterStyle)}>
+            <span ref={(span) => { this.stderr = span; }} tyle={outputContainerStyle}>
+              {this.props.stderr}
+            </span>
           </CardText>
         )}
         <CardText expandable>
